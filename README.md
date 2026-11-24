@@ -1,267 +1,255 @@
-Tgtorub
 
-Telegram ↔ Rubika File Transfer Bot
+# Tgtorub
+## Telegram to Rubika File Transfer Bot
 
 ربات انتقال فایل و لینک بین تلگرام و روبیکا
 
 ---
 
-1. امکانات
+## 1. Requirements
 
-- انتقال فایل بین تلگرام و روبیکا
-- دریافت و دانلود لینک‌های اینترنتی
-- پشتیبانی از yt-dlp
-- مدیریت دانلود و آپلود فایل
-- اجرای دائمی ربات روی سرور
-- راه‌اندازی خودکار پس از Restart سرور
+- Ubuntu 22.04 or 24.04
+- Root access
+- Internet connection
+- Telegram account
+- Rubika account
 
----
+## 2. Telegram Credentials
 
-2. پیش‌نیازها
-
-- Ubuntu 22.04 یا Ubuntu 24.04
-- دسترسی Root به سرور
-- اتصال اینترنت
-- حساب تلگرام
-- حساب روبیکا
-
----
-
-3. دریافت اطلاعات تلگرام
-
-برای نصب ربات به سه اطلاعات اصلی تلگرام نیاز دارید.
-
-3.1 ساخت Telegram Bot
+### 2.1 Create a Telegram Bot
 
 1. وارد تلگرام شوید.
-2. به ربات "@BotFather" (https://t.me/BotFather) مراجعه کنید.
-3. دستور زیر را ارسال کنید:
-
-"/newbot"
-
+2. به @BotFather مراجعه کنید.
+3. دستور /newbot را ارسال کنید.
 4. نام و username ربات را انتخاب کنید.
-5. مقدار Bot Token را دریافت و ذخیره کنید.
+5. مقدار Bot Token را ذخیره کنید.
 
-نمونه Bot Token:
-
-"123456789:ABCDEFxxxxxxxxxxxxxxxxxxxx"
-
-3.2 دریافت API ID و API Hash
+### 2.2 Get API ID and API Hash
 
 1. وارد سایت زیر شوید:
 
 https://my.telegram.org
 
 2. با شماره تلفن تلگرام وارد شوید.
-3. گزینه API development tools را انتخاب کنید.
-4. یک Application ایجاد کنید.
-5. دو مقدار زیر را دریافت کنید:
+3. وارد API development tools شوید.
+4. یک Application بسازید.
+5. مقادیر API ID و API Hash را ذخیره کنید.
 
-- API ID
-- API Hash
+### 2.3 Get Telegram User ID
 
-این اطلاعات محرمانه هستند و نباید در اختیار دیگران قرار بگیرند.
-
-3.3 دریافت Telegram User ID
-
-1. وارد تلگرام شوید.
-2. به "@userinfobot" (https://t.me/userinfobot) مراجعه کنید.
-3. شناسه عددی حساب خود را دریافت کنید.
+به @userinfobot مراجعه کنید و شناسه عددی تلگرام خود را دریافت کنید.
 
 ---
 
-4. نصب روی Ubuntu
+## 3. Installation
 
-با استفاده از SSH به سرور متصل شوید.
+با SSH وارد سرور شوید و دسترسی Root بگیرید:
 
-ابتدا وارد حساب Root شوید:
-
+```bash
 sudo -i
+```
 
-سپس دستور نصب را اجرا کنید:
+دستور نصب:
 
+```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/mehrdaden/Tgtorub/main/install-online.sh)
+```
 
-عملکرد نصب‌کننده
+### Installer Features
 
-نصب‌کننده به‌صورت خودکار مراحل زیر را انجام می‌دهد:
+- Install system dependencies
+- Install Python 3.11
+- Download project from GitHub
+- Create Python virtual environment
+- Install Python requirements
+- Configure systemd service
+- Start the bot
 
-1. نصب پیش‌نیازهای سیستم
-2. نصب Python 3.11
-3. دریافت پروژه از GitHub
-4. ایجاد محیط مجازی Python
-5. نصب کتابخانه‌های موردنیاز
-6. ایجاد سرویس systemd
-7. راه‌اندازی ربات
-
-نکته مهم: نصب‌کننده فعلی به فایل تنظیمات ".env" موجود نیاز دارد. بنابراین این نسخه برای نصب یا به‌روزرسانی روی سروری است که تنظیمات اولیه آن آماده شده باشد.
+IMPORTANT: The current installer requires an existing .env file. It does not create a fresh configuration or ask for Telegram credentials.
 
 ---
 
-5. فایل تنظیمات (.env)
+## 4. Environment Configuration
 
-مسیر فایل تنظیمات:
+Configuration file:
 
+```bash
 /opt/tg2rub/app/.env
+```
 
-نمونه ساختار تنظیمات:
+Example:
 
+```env
 BOT_TOKEN=YOUR_BOT_TOKEN
 API_ID=YOUR_API_ID
 API_HASH=YOUR_API_HASH
 ADMIN_IDS=YOUR_TELEGRAM_USER_ID
+```
 
-مقادیر نمونه را با اطلاعات واقعی جایگزین کنید.
+Replace the example values with your actual Telegram credentials.
 
-هشدار: فایل ".env" را در GitHub منتشر نکنید.
+Never upload .env to GitHub.
 
 ---
 
-6. ورود به حساب روبیکا
+## 5. Rubika Login
 
-در صورت نداشتن نشست قبلی روبیکا، دستور زیر را اجرا کنید:
+If no Rubika session exists, run:
 
+```bash
 sudo -u tg2rub /opt/tg2rub/app/venv/bin/python /opt/tg2rub/app/login_rubika.py
+```
 
-مراحل ورود را طبق پیام‌های برنامه دنبال کنید.
+Follow the login instructions.
 
-پس از ورود موفق، نشست روبیکا ذخیره می‌شود.
+After successful login:
 
-سپس سرویس را Restart کنید:
-
+```bash
 systemctl restart tg2rub
+```
 
 ---
 
-7. بررسی وضعیت ربات
+## 6. Service Management
 
-برای بررسی وضعیت سرویس:
+Check service status:
 
+```bash
 systemctl status tg2rub
+```
 
-برای مشاهده لاگ زنده:
+Start:
 
-journalctl -u tg2rub -f
-
-برای مشاهده 100 خط آخر لاگ:
-
-journalctl -u tg2rub -n 100 --no-pager
-
----
-
-8. دستورات مدیریت ربات
-
-شروع سرویس
-
+```bash
 systemctl start tg2rub
+```
 
-توقف سرویس
+Stop:
 
+```bash
 systemctl stop tg2rub
+```
 
-راه‌اندازی مجدد
+Restart:
 
+```bash
 systemctl restart tg2rub
+```
 
-فعال‌سازی اجرای خودکار هنگام روشن شدن سرور
+Enable automatic startup:
 
+```bash
 systemctl enable tg2rub
+```
 
-غیرفعال کردن اجرای خودکار
+Disable automatic startup:
 
+```bash
 systemctl disable tg2rub
+```
 
 ---
 
-9. به‌روزرسانی ربات
+## 7. Logs
 
-برای دریافت آخرین نسخه برنامه از شاخه "main" در GitHub، دستور نصب‌کننده را دوباره اجرا کنید:
+Live logs:
 
-bash <(curl -fsSL https://raw.githubusercontent.com/mehrdaden/Tgtorub/main/install-online.sh)
-
-در فرایند به‌روزرسانی:
-
-- فایل‌های برنامه از GitHub دریافت می‌شوند.
-- وابستگی‌های Python نصب می‌شوند.
-- محیط Python قبلی پشتیبان‌گیری می‌شود.
-- فایل ".env" حفظ می‌شود.
-- نشست‌های تلگرام و روبیکا عمداً حذف نمی‌شوند.
-- سرویس مجدداً راه‌اندازی می‌شود.
-
-قبل از به‌روزرسانی، از تنظیمات و فایل‌های Session نسخه پشتیبان تهیه کنید.
-
----
-
-10. بررسی نسخه Python و yt-dlp
-
-بررسی Python
-
-/opt/tg2rub/app/venv/bin/python --version
-
-نسخه مورد انتظار Python 3.11 یا بالاتر است.
-
-بررسی yt-dlp
-
-/opt/tg2rub/app/venv/bin/python -m yt_dlp --version
-
----
-
-11. مشکلات متداول
-
-خطای Python 3.10
-
-نسخه‌های جدید yt-dlp ممکن است با Python 3.10 سازگار نباشند.
-
-برای بررسی نسخه Python:
-
-/opt/tg2rub/app/venv/bin/python --version
-
-در صورت استفاده از نصب‌کننده فعلی، محیط جدید با Python 3.11 ساخته می‌شود.
-
-خطای Telegram RPC
-
-برخی خطاهای Telegram RPC موقتی هستند و ممکن است به اختلال سمت تلگرام مربوط باشند.
-
-برای بررسی:
-
-journalctl -u tg2rub -n 100 --no-pager
-
-خطای دانلود از X (Twitter)
-
-دلایل احتمالی:
-
-- خصوصی بودن حساب یا پست
-- تعلیق شدن حساب
-- محدودیت دسترسی به محتوای حساس
-- نبود ویدئو در پست
-- محدودیت‌های احراز هویت
-
-استفاده از Python 3.11 به‌تنهایی این محدودیت‌ها را برطرف نمی‌کند.
-
-بررسی سرویس پس از خطا
-
-systemctl restart tg2rub
-
-سپس:
-
+```bash
 journalctl -u tg2rub -f
+```
+
+Last 100 lines:
+
+```bash
+journalctl -u tg2rub -n 100 --no-pager
+```
 
 ---
 
-12. امنیت
+## 8. Update
 
-- Bot Token را محرمانه نگه دارید.
-- API Hash را منتشر نکنید.
-- فایل ".env" را در GitHub قرار ندهید.
-- فایل‌های Session تلگرام و روبیکا را منتشر نکنید.
-- از اطلاعات ورود و تنظیمات سرور نسخه پشتیبان تهیه کنید.
+To download and install the latest version from GitHub:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/mehrdaden/Tgtorub/main/install-online.sh)
+```
+
+The installer:
+
+- Downloads the latest project files.
+- Creates a new Python environment.
+- Installs dependencies.
+- Preserves the existing .env file.
+- Preserves existing session files.
+- Keeps a backup of the previous Python environment.
+- Restarts the service.
+
+Always keep a backup of configuration and session files.
 
 ---
 
-Repository
+## 9. Python and yt-dlp Version
 
-GitHub:
+Check Python:
+
+```bash
+/opt/tg2rub/app/venv/bin/python --version
+```
+
+Check yt-dlp:
+
+```bash
+/opt/tg2rub/app/venv/bin/python -m yt_dlp --version
+```
+
+The installer uses Python 3.11.
+
+---
+
+## 10. Troubleshooting
+
+### Python 3.10 Error
+
+Check the active Python version:
+
+```bash
+/opt/tg2rub/app/venv/bin/python --version
+```
+
+### Telegram RPC Errors
+
+Check logs:
+
+```bash
+journalctl -u tg2rub -n 100 --no-pager
+```
+
+Some Telegram RPC errors may be temporary server-side errors.
+
+### X (Twitter) Download Errors
+
+Possible causes:
+
+- Private account or post
+- Suspended account
+- Sensitive content restrictions
+- No video in the post
+- Authentication restrictions
+
+Python 3.11 alone does not bypass these restrictions.
+
+---
+
+## 11. Security
+
+- Never share your Bot Token.
+- Never share your API Hash.
+- Never upload .env to GitHub.
+- Never publish Telegram or Rubika session files.
+- Keep backups of your configuration and sessions.
+
+---
+
+## GitHub Repository
 
 https://github.com/mehrdaden/Tgtorub
-
-Branch: "main"
