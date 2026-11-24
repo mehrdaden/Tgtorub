@@ -2,30 +2,26 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-REPO="https://github.com/mehrdaden/Tgtorub.git"
+URL="https://raw.githubusercontent.com/mehrdaden/Tgtorub/main/install.sh"
 
-if [[ $EUID -ne 0 ]]; then
-    echo "Please run as root"
+echo "Downloading Tgtorub installer..."
+
+TMP_FILE="$(mktemp)"
+
+if ! curl -fsSL "$URL" -o "$TMP_FILE"; then
+    echo "ERROR: Could not download installer."
+    rm -f "$TMP_FILE"
     exit 1
 fi
 
-if ! command -v git >/dev/null 2>&1; then
-    apt-get update
-    apt-get install -y git
-fi
-
-WORKDIR="$(mktemp -d)"
-trap 'rm -rf "$WORKDIR"' EXIT
-
-echo "Downloading Tgtorub from GitHub..."
-
-git clone --depth 1 "$REPO" "$WORKDIR"
-
-cd "$WORKDIR"
-
-if [[ ! -f install.sh ]]; then
-    echo "ERROR: install.sh not found!"
+if ! grep -q 'TGTORUB INSTALLER' "$TMP_FILE"; then
+    echo "ERROR: Invalid installer file."
+    rm -f "$TMP_FILE"
     exit 1
 fi
 
-bash install.sh
+chmod 700 "$TMP_FILE"
+
+sudo bash "$TMP_FILE"
+
+rm -f "$TMP_FILE"
