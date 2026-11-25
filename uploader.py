@@ -224,22 +224,37 @@ class RubikaSession:
             self.inflight -= 1
 
     async def _send(self, path: Path, caption: str):
-        fn = getattr(self.client, "send_document", None) or getattr(self.client, "send_file", None)
-        if fn is None:
-            raise FatalUploadError("installed rubpy has neither send_document nor send_file")
+        """Upload from disk in chunks, then send the returned file metadata.
+
+        Do not pass str(path) to send_document/send_file: in Rubpy 7.3.5
+        send_message reads a local path completely into memory before upload.
+        client.upload(str(path)) uses the chunked upload_file implementation.
+        """
+        if not path.is_file():
+            raise FileNotFoundError(str(path))
+
+        upload_fn = getattr(self.client, "upload", None)
+        send_fn = getattr(self.client, "send_message", None)
+        if upload_fn is None or send_fn is None:
+            raise FatalUploadError(
+                "installed rubpy must provide upload and send_message"
+            )
 
         async def call(target: str):
-            try:
-                return await fn(target, str(path), caption=caption)
-            except TypeError as e:
-                if "caption" in str(e):
-                    return await fn(target, str(path))
-                raise
+            uploaded = await upload_fn(str(path), file_name=path.name)
+            if uploaded is None:
+                raise RuntimeError("Rubpy upload returned no file metadata")
+            return await send_fn(
+                target,
+                text=caption,
+                file_inline=uploaded,
+            )
 
         try:
             return await call(self.target)
         except Exception as e:
-            # Some rubpy versions reject the 'me' alias for file messages: retry with our own GUID.
+            # Some rubpy versions reject the 'me' alias for file messages:
+            # retry with our own GUID if it can be determined.
             if self.target == "me" and any(m in str(e).upper() for m in PEER_MARKERS):
                 guid = await self._own_guid()
                 if guid:
