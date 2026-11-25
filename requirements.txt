@@ -1,0 +1,5 @@
+telethon>=1.36,<2
+rubpy>=7.3,<8
+python-dotenv>=1.0,<2
+pyzipper>=0.3.6,<1
+yt-dlp[default]>=2026.10.26,<2027
